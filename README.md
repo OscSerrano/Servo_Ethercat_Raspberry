@@ -53,7 +53,8 @@ MASTER0_DEVICE= "your eth0 MAC address"
 DEVICE_MODULES= "generic"
 ```
 
-If any file exist then do next and try again.
+> [!NOTE]
+> If any file exist then do next and try again.
 ```shell
 sudo ln -s /opt/etherlab/etc/init.d/ethercat /etc/init.d/ethercat
 sudo mkdir /etc/sysconfig
@@ -69,6 +70,9 @@ Type in:
 KERNEL=="EtherCAT[0-9]*", MODE="0664", GROUP="users"
 ```
 Exit the file.
+> [!WARNING]
+> Necessary step, not doing it will result in the need of using sudo.
+> And even with it the program might not work at all.
 
 ### Start Ethercat service  
 ```shell
@@ -76,5 +80,10 @@ sudo systemctl enable ethercat.service
 sudo systemctl start ethercat.service
 sudo systemctl status ethercat.service
 ```
+> The last command is to check if the service started correctly (Not necessary).
+
+## Program use
+It has a command line interface so read it :)
+Comming soon.
 
 
