@@ -38,11 +38,15 @@ sudo ln -s /opt/etherlab/etc/init.d/ethercat /etc/init.d/ethercat
 sudo mkdir /etc/sysconfig
 sudo cp /opt/etherlab/etc/sysconfig/ethercat /etc/sysconfig/ethercat
 
-### Start and grant access to Ethercat service  
+Grant users access to ethercat
+sudo nano /etc/udev/rules.d/99-EtherCAT.rules
+Type in: KERNEL=="EtherCAT[0-9]*", MODE="0664", GROUP="users"
+Exit the file.
+
+### Start Ethercat service  
 sudo systemctl enable ethercat.service
 sudo systemctl start ethercat.service
 sudo systemctl status ethercat.service
-sudo chmod 666 /dev/EtherCAT0
 
 
 
