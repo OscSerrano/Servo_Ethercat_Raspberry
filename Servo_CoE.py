@@ -30,7 +30,7 @@ class ServoConection:
 
         self.operationModes = {
             'No mode': 0,
-            'Position mode': 1,
+            'Position mode': 1,     #<-- Has 4 inner modes
             'Velocity mode': 3,
             'Homing mode': 6,
             'Cyclic synchronous position mode': 8,
@@ -46,7 +46,7 @@ class ServoConection:
 
             'New set-point': 31,                    #Add target position to queue while operative in position or homing mode
 
-            'Change set immediately': 47,           #Go to next position in queue while operative in position mode
+            'Change set immediately': 47,           #Go to next position while operative in position mode
             'Change to new set-point': 63,          #Add target position and go there immediately
 
             'Relative position operation': 79,      #Operate with relative positions in position mode
@@ -69,7 +69,6 @@ class ServoConection:
 #            'Profile deceleration': ['uint32', '0x6084'],
 #            'Target velocity': ['int32', '0x60FF'],        #Funcion agregada
 #        }
-
 
     def servoInitAll(self):
         print('------------------- Configurando los dispositivos --------------------')
@@ -174,8 +173,39 @@ class ServoConection:
         if comando.stderr:
             print (comando.stderr)
         else:
-            print(f'--- Estado del dispositivo {id}: {comando.stdout} -- Revisar documentacion')
-
+            print(f'--- Estado del dispositivo {id}: ')
+            status = int(comando.stdout)
+            status1 = status & 111
+            status2 = status & 79
+            if status1 == 33:
+                print('- Ready to switch on')
+            elif status1 == 35:
+                print('- Switched on')
+            elif status1 == 39:
+                print('- Operation enabled')
+            elif status1 == 7:
+                print('- Quick stop active')
+            elif status2 == 0:
+                print('- Not ready to switch on')
+            elif status2 == 64:
+                print('- Switch on disabled')
+            elif status2 == 15:
+                print('- Fault reaction active')
+            elif status2 == 8:
+                print('- Fault')
+            else:
+                print('!! Unidentified')
+            
+            #The next ones describe speed, position or torque dependin on mode
+            if status & 1024 == 1024:
+                print('- Target reached')           
+            if status & 2048 == 2048:
+                print('- Internal limit active')
+            if status & 4096 == 4096:
+                print('- Set-point Acknowledge or Speed zero state')
+            if status & 8192 == 8192:
+                print('- Following or slippage Error')
+                   
     def get_Operation_Mode(self, id):
         comando = subprocess.run(['ethercat', 'upload', '-t', 'int8', '0x6061', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         if comando.stderr:
@@ -200,7 +230,6 @@ class ServoConection:
 
 
 
-
     def servoVelocityMode(self):
         for id in range(len(self.slaves)):
             self.set_Operation_Mode(id, self.operationModes['Velocity mode'])
@@ -209,16 +238,21 @@ class ServoConection:
     
         while True:
             print('Ingresa el id del servo y la nueva velocidad. Ejemplo: 0 500')
-            print('Ingresa el id del servo y ? para ver la posicion y velocidad actual Ej: 0 ?')
+            print('Ingresa el id y ? para ver la posicion y velocidad actual Ej: 0 ?')
             print('Ingresa r r para volver al menu')
-            id, spd = input().split()
-            if id == 'r' and spd == 'r':
-                break
-            elif spd == '?':
-                self.get_Actual_Position(id)
-                self.get_Actual_Velocity(id)
-            else:
-                self.set_Target_Velocity(id, spd)
+            try:
+                id, spd = input().split()
+                if id == 'r' and spd == 'r':
+                    break
+                elif spd == '?':
+                    self.get_Actual_Position(id)
+                    self.get_Actual_Velocity(id)
+                else:
+                    self.set_Target_Velocity(id, spd)
+            except:
+                print('---')
+                print('¡¡¡ Ingresa los valores requeridos !!!')
+                print('---')
         
         for id in range(len(self.slaves)):
             self.set_Target_Velocity(id, 0)
@@ -227,40 +261,43 @@ class ServoConection:
             
         print('----------------------------------------------------------------------')
 
-    def servoPositionMode(self):
+    def servoPositionMode(self, operation, newSetPoint):
         for id in range(len(self.slaves)):
             self.set_Operation_Mode(id, self.operationModes['Position mode'])
-            self.set_Control_Word(id, self.controlWords['Enable operation'])
+            self.set_Control_Word(id, self.controlWords[operation])
 
         print('----------------------------------------------------------------------')
 
         while True:
-            print('Ingresa el id del servo, la nueva posicion en grados y velocidad Ejemplo: 0 90 20')
-            print('Ingresa el id del servo y ? ? para ver la posicion y velocidad actual Ej: 0 ? ?')
+            print('Ingresa el id del servo, la nueva posicion en grados y velocidad Ej: 0 90 20')
+            print('Ingresa el id y ? ? para ver la posicion y velocidad actual Ej: 0 ? ?')
             print('Ingresa r r r para volver al menu')
-            id, pos, spd = input().split()
+            try:
+                id, pos, spd = input().split()
+                if id == 'r' and pos == 'r' and spd == 'r':
+                    break
+                elif pos == '?' and spd == '?':
+                    self.get_Actual_Position(id)
+                    self.get_Actual_Velocity(id)
+                else:
+                    try:
+                        encoderPosition = int(int(pos) * 10000 / 360)
+                    except Exception as ex:
+                        print(ex)
 
-            if id == 'r' and pos == 'r' and spd == 'r':
-                break
-            elif pos == '?' and spd == '?':
-                self.get_Actual_Position(id)
-                self.get_Actual_Velocity(id)
-            else:
-                try:
-                    encoderPosition = int(int(pos) * 10000 / 360)
-                except Exception as ex:
-                    print(ex)
+                    self.set_Operative_Velocity(id, spd)            
+                    self.set_Target_Position(id, encoderPosition)
+                    self.set_Control_Word(id, self.controlWords[newSetPoint])
+                    self.set_Control_Word(id, self.controlWords[operation])
+            except:
+                print('---')
+                print('¡¡¡ Ingresa los valores requeridos !!!')
+                print('---')
 
-                self.set_Operative_Velocity(id, spd)            
-                self.set_Target_Position(id, encoderPosition)
-                self.set_Control_Word(id, self.controlWords['New set-point'])
-                self.set_Control_Word(id, self.controlWords['Enable operation'])
-                
         for id in range(len(self.slaves)):
             self.set_Operation_Mode(id, self.operationModes['No mode'])
             self.set_Control_Word(id, self.controlWords['Shutdown'])
-
-            
+           
         print('----------------------------------------------------------------------')
 
 
@@ -268,16 +305,33 @@ class ServoConection:
         self.servoInitAll()
 
         while True:
-            print('--- Ingresa v para entrar en control por velocidad ---')
-            print('--- Ingresa p para entrar en control por posicion absoluta ---')
-            print('--- Ingresa x para deshabilitar los dispositivos y cerrar el programa ---')
+            print('--- Ingresa vel para entrar en control por velocidad ---')
+            print('--- Ingresa pa para entrar en control por posicion absoluta ---')
+            print('--- Ingresa pai para entrar en control por posicion absoluta inmediata---')
+            print('--- Ingresa pr para entrar en control por posicion relativa ---')
+            print('--- Ingresa pri para entrar en control por posicion relativa inmediata---')
+            print('--- Ingresa exit para deshabilitar los dispositivos y cerrar el programa ---')
             option = input()
 
-            if option == 'v':
+            if option == 'vel':
+                #In this mode user only controls velocity
                 self.servoVelocityMode()
-            if option == 'p':
-                self.servoPositionMode()
-            if option == 'x':
+            #Next modes control both position and velocity
+            elif option == 'pa':
+                #In this and next mode position is an absolute value between -2^31 -1 y 2^31 -1
+                #A buffer on the servo-drive is used to save a list of the given positions
+                self.servoPositionMode('Enable operation', 'New set-point')
+            elif option == 'pai':
+                #Similar to pa, but no buffer used because it changes target immediately
+                self.servoPositionMode('Change set immediately', 'Change to new set-point')
+            elif option == 'pr':
+                #The last 2 modes work by adding the given position to final position
+                #This mode finishes all the sums one by one
+                self.servoPositionMode('Relative position operation', 'New relative set-point')
+            elif option == 'pri':
+                #This mode do all the adding first, so it goes to final position immediately
+                self.servoPositionMode('Change relative set immediately', 'Change to new relative set-point')
+            elif option == 'exit':
                 self.servoCloseAll()
                 sys.exit()
                 
@@ -290,3 +344,4 @@ if __name__ == '__main__':
     except Exception as ex:
         print(ex)
         sys.exit(1)
+        
