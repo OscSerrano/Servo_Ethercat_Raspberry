@@ -111,11 +111,16 @@ Apart from `id`, the only other value required is `velocity`. In my case it can 
 > [!IMPORTANT]
 > Read your own device manual to get correct values.
 
-> Next one is for position mode
+> Last ones are for position mode
 
-The second value required is the position value (I used degrees), in my program it can be a number between -77_309_411 and 77_309_411 degrees.
-> (my encoder manages from -2_147_483_647 to 2_147_483_647 reference units).
+Apart from `id`, the second value required is the `position` value.
+> [!NOTE]
+> My encoder manages between -77_309_411 and 77_309_411 degrees (360 is a turn).
+> 
+> And that's equivalent to between -2_147_483_647 to 2_147_483_647 reference units (10_000 is a turn).
+>
+> At this moment the position input is in degrees.
 
-In position mode, the third and last value is velocity, but in this case it can only be a number between -6_000 and 6_000 rpm (again, check device manual to get right values).
+The third and last value is `velocity`, but in this case it can only be a number between -6_000 and 6_000 rpm.
 > [!IMPORTANT]
-> Read your own device manual to get correct values.
+> Please, read your own device manual to get correct values.
