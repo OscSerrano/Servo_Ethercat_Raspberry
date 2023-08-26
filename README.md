@@ -6,7 +6,7 @@ Deployed with:
 + Raspbian operative system
 + IgH EtherCAT Master implementation for linux 2.6 or newer.
 + Python 3 with sys and subprocess libraries.
-+ SDO comunication with slaves (No PDO, SDO only).
++ SDO comunication with slaves (No PDO. Only SDO).
 
 ## Requirements
 ### Install dependencies
