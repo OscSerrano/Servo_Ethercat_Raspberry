@@ -83,7 +83,26 @@ sudo systemctl status ethercat.service
 > The last command is to check if the service started correctly (Not necessary).
 
 ## Program use
-It has a command line interface so read it :)
-Comming soon.
+### Run the program
+Open a terminal console where the python program is.
+Then type in:
+```shell
+python3 Servo_CoE.py
+```
 
+### Input modes
+At the beginning, the program will ask for one of these inputs
++ ``vel`` Control the velocity.
++ ``pa `` Control the position(encoder absolute value) and velocity. This mode uses a buffer in the drive to save a list of all given positions and go to them one by one.
++ ``pai`` Control the position(encoder absolute value) and velocity. This mode changes target position when input a new position.
++ ``pr `` Control the position(by adding values) and velocity. This mode saves the positions in the buffer, but instead of going to the specified position, it adds up the given value to actual position (does every sum one by one).
++ ``pri`` Control the position(by adding values) and velocity. This mode instantly adds up the last value given to set the new target position.
 
+### Input values
+In all the modes, first input value is the slave's id (its position within the ehtercat network). If you don't know the id, at init, the program shows all the connected slaves with id, alias and state.
+
+In velocity mode, the only other value required is velocity, it can be a number between -20_000 and 20_000 (read your own device manual to get correct values).
+
+In position mode, the second value required is the position value (I used degrees), in my program it can be a number between -77_309_411 and 77_309_411 (my encoder manages from -2_147_483_647 to 2_147_483_647 reference units).
+
+In position mode, the third and last value is velocity, but in this case it can only be a number between -6_000 and 6_000 (again, check device manual to get right values).
