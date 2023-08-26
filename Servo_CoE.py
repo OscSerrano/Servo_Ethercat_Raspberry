@@ -1,4 +1,4 @@
-
+       
 import sys 
 import subprocess
 
@@ -145,7 +145,6 @@ class ServoConection:
 
     def set_Target_Velocity(self, id, spd):
         #Slave's index and speed in rpm while in speed mode
-        print(f'--- Modificando esclavo {id} ---')
         comando = subprocess.run(['ethercat', 'download', '-t', 'int32', '0x60FF', f'{id}', '--', f'{spd}'], stderr=subprocess.PIPE, text=True)
         if comando.stderr:
             print (comando.stderr)
@@ -344,4 +343,3 @@ if __name__ == '__main__':
     except Exception as ex:
         print(ex)
         sys.exit(1)
-        
