@@ -188,7 +188,7 @@ class ServoConection:
         if comando.stderr:
             print (comando.stderr)
         else:
-            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout.split()[1}')
+            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout.split()[1]}')
             #print(f'--- Modo de operacion: {list(self.operationModes.keys())[list(self.operationModes.values()).index(comando.stdout)]}')
 
     def get_Actual_Velocity(self, id):
@@ -212,7 +212,7 @@ class ServoConection:
         else:
             print(f'--- Torque actual del dispositivo {id} : {comando.stdout}')
 
-    #Program functions
+    #Operation examples
     def servoInitAll(self):
         print('------------------- Configurando los dispositivos --------------------')
         for id in range(len(self.slaves)):
