@@ -57,27 +57,29 @@ class ServoConection:
         }
 
 #        self.instructions = {
-#            'Error code': ['uint16', '0x603F'],            #Funcion agregada
-#            'Control word': ['uint16', '0x6040'],          #Funcion agregada
-#            'Status word': ['uint16', '0x6041'],           #Funcion agregada
-#            'Operation mode': ['int8', '0x6060'],          #Funcion agregada
-#            'Display operation mode': ['int8', '0x6061'],  #Funcion agregada
-#            'Position actual value': ['int32', '0x6064'],  #Funcion agregada
-#            'Velocity actual value': ['int32', '0x606C'],  #Funcion agregada
-#            'Max torque': ['uint32', '0x6072'],
-#            'Torque actual value': ['int16', '0x6077'],    #Funcion agregada
-#            'Target position': ['int32', '0x607A'],        #Funcion agregada
-#            'Homing offset': ['uint32', '0x607C'],
+#            'Error code': ['uint16', '0x603F'],            #Added
+#            'Control word': ['uint16', '0x6040'],          #Added
+#            'Status word': ['uint16', '0x6041'],           #Added 
+#            'Operation mode': ['int8', '0x6060'],          #Added 
+#            'Display operation mode': ['int8', '0x6061'],  #Added 
+#            'Position actual value': ['int32', '0x6064'],  #Added 
+#            'Velocity actual value': ['int32', '0x606C'],  #Added 
+#            'Max torque': ['uint16', '0x6072'],
+#            'Torque actual value': ['int16', '0x6077'],    #Added 
+#            'Target position': ['int32', '0x607A'],        #Added 
+#            'Homing offset': ['int32', '0x607C'],
 #            'Max profile velocity': ['uint32', '0x607F'],
-#            'Profile velocity': ['uint32', '0x6081'],      #Funcion agregada
-#            'Profile acceleration': ['uint32', '0x6083'],  #Funcion agregada
-#            'Profile deceleration': ['uint32', '0x6084'],  #Funcion agregada
-#            'Homing method': ['uint32', '0x6098'],
+#            'Profile velocity': ['uint32', '0x6081'],      #Added 
+#            'Profile acceleration': ['uint32', '0x6083'],  #Added 
+#            'Profile deceleration': ['uint32', '0x6084'],  #Added 
+#            'Homing method': ['int8', '0x6098'],
 #            'Homing speeds': ['uint32', '0x6099'],
 #            'Homing acceleration': ['uint32', '0x609A'],
-#            'Positive torque limit': ['uint32', '0x60E0'],
-#            'Negative torque limit': ['uint32', '0x60E1'],
-#            'Target velocity': ['int32', '0x60FF'],        #Funcion agregada
+#            'Positive torque limit': ['uint16', '0x60E0'],
+#            'Negative torque limit': ['uint16', '0x60E1'],
+#            'Digital inputs': ['uint32', '0x60FD'],
+#            'Digital outputs': ['uint32', '0x60FE'],
+#            'Target velocity': ['int32', '0x60FF'],        #Added 
 #        }
 
     #Read/Write intructions
@@ -186,7 +188,7 @@ class ServoConection:
         if comando.stderr:
             print (comando.stderr)
         else:
-            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout}')
+            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout.split()[1}')
             #print(f'--- Modo de operacion: {list(self.operationModes.keys())[list(self.operationModes.values()).index(comando.stdout)]}')
 
     def get_Actual_Velocity(self, id):
@@ -382,4 +384,3 @@ if __name__ == '__main__':
     except Exception as ex:
         print(ex)
         sys.exit(1)
-        
