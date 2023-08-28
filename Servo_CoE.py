@@ -1,4 +1,4 @@
-      
+     
 import sys 
 import subprocess
 
@@ -188,8 +188,7 @@ class ServoConection:
         if comando.stderr:
             print (comando.stderr)
         else:
-            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout.split()[1]}')
-            #print(f'--- Modo de operacion: {list(self.operationModes.keys())[list(self.operationModes.values()).index(comando.stdout)]}')
+            print(f'--- Modo de operacion del dispositivo {id}: {list(self.operationModes.keys())[list(self.operationModes.values()).index(int(comando.stdout.split()[1]))]}')
 
     def get_Actual_Velocity(self, id):
         comando = subprocess.run(['ethercat', 'upload', '-t', 'int32', '0x606C', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -278,7 +277,7 @@ class ServoConection:
     
         while True:
             print('Ingresa el id del servo y la nueva velocidad. Ejemplo: 0 500')
-            print('Ingresa el id y ? para ver la posicion y velocidad actual Ej: 0 ?')
+            print('Ingresa el id y ? para ver el estatus del dispositivo Ej: 0 ?')
             print('Ingresa r r para volver al menu')
             try:
                 id, spd = input().split()
@@ -287,6 +286,8 @@ class ServoConection:
                 elif spd == '?':
                     self.get_Actual_Position(id)
                     self.get_Actual_Velocity(id)
+                    self.get_Operation_Mode(id)
+                    self.get_Status_Word(id)
                 else:
                     self.set_Target_Velocity(id, spd)
             except:
@@ -310,7 +311,7 @@ class ServoConection:
 
         while True:
             print('Ingresa el id del servo, la nueva posicion en grados y velocidad Ej: 0 90 20')
-            print('Ingresa el id y ? ? para ver la posicion y velocidad actual Ej: 0 ? ?')
+            print('Ingresa el id y ? ? para ver el estatus del dispositivo Ejemplo: 0 ? ?')
             print('Ingresa r r r para volver al menu')
             try:
                 id, pos, spd = input().split()
@@ -319,9 +320,11 @@ class ServoConection:
                 elif pos == '?' and spd == '?':
                     self.get_Actual_Position(id)
                     self.get_Actual_Velocity(id)
+                    self.get_Operation_Mode(id)
+                    self.get_Status_Word(id)
                 else:
                     try:
-                        encoderPosition = int(int(pos) * 10000 / 360)
+                        encoderPosition = int(int(pos) * 10000 / 360) #To convert input in grades to reference units where 10000 is a turn
                     except Exception as ex:
                         print(ex)
 
