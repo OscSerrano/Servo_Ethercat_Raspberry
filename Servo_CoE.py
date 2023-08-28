@@ -1,4 +1,4 @@
-       
+      
 import sys 
 import subprocess
 
@@ -57,19 +57,160 @@ class ServoConection:
         }
 
 #        self.instructions = {
+#            'Error code': ['uint16', '0x603F'],            #Funcion agregada
 #            'Control word': ['uint16', '0x6040'],          #Funcion agregada
 #            'Status word': ['uint16', '0x6041'],           #Funcion agregada
 #            'Operation mode': ['int8', '0x6060'],          #Funcion agregada
 #            'Display operation mode': ['int8', '0x6061'],  #Funcion agregada
 #            'Position actual value': ['int32', '0x6064'],  #Funcion agregada
 #            'Velocity actual value': ['int32', '0x606C'],  #Funcion agregada
+#            'Max torque': ['uint32', '0x6072'],
+#            'Torque actual value': ['int16', '0x6077'],    #Funcion agregada
 #            'Target position': ['int32', '0x607A'],        #Funcion agregada
+#            'Homing offset': ['uint32', '0x607C'],
+#            'Max profile velocity': ['uint32', '0x607F'],
 #            'Profile velocity': ['uint32', '0x6081'],      #Funcion agregada
-#            'Profile acceleration': ['uint32', '0x6083'],
-#            'Profile deceleration': ['uint32', '0x6084'],
+#            'Profile acceleration': ['uint32', '0x6083'],  #Funcion agregada
+#            'Profile deceleration': ['uint32', '0x6084'],  #Funcion agregada
+#            'Homing method': ['uint32', '0x6098'],
+#            'Homing speeds': ['uint32', '0x6099'],
+#            'Homing acceleration': ['uint32', '0x609A'],
+#            'Positive torque limit': ['uint32', '0x60E0'],
+#            'Negative torque limit': ['uint32', '0x60E1'],
 #            'Target velocity': ['int32', '0x60FF'],        #Funcion agregada
 #        }
 
+    #Read/Write intructions
+    def set_Operation_Mode(self, id, mode):
+        #Check self.operationModes for availale modes
+        comando = subprocess.run(['ethercat', 'download', '-t', 'int8', '0x6060', f'{id}', '--', f'{mode}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Modo de operacion del dispositivo {id} actualizado a {mode} : {list(self.operationModes.keys())[list(self.operationModes.values()).index(mode)]}')
+
+    def set_Control_Word(self, id, word):
+        comando = subprocess.run(['ethercat', 'download', '-t', 'uint16', '0x6040', f'{id}', '--', f'{word}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Palabra de control del dispositivo {id} actualizada a {word} : {list(self.controlWords.keys())[list(self.controlWords.values()).index(word)]}')
+
+    def set_Target_Velocity(self, id, spd):
+        #Slave's index and speed in rpm while in speed mode
+        comando = subprocess.run(['ethercat', 'download', '-t', 'int32', '0x60FF', f'{id}', '--', f'{spd}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Velocidad objetivo del dispositivo {id} actualizada a {spd} rpm')
+
+    def set_Operative_Velocity(self, id, spd):
+        #Slave's index and speed in rpm while in position mode
+        comando = subprocess.run(['ethercat', 'download', '-t', 'uint32', '0x6081', f'{id}', '--', f'{spd}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Velocidad operativa del dispositivo {id} configurada en {spd} rpm')
+
+    def set_Target_Position(self, id, pos):
+        comando = subprocess.run(['ethercat', 'download', '-t', 'int32', '0x607A', f'{id}', '--', f'{pos}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Posicion objetivo del dispositivo {id} actualizada a {pos} user units')
+
+    def set_Acceleration(self, id, acc):
+        #Works in any mode, but has to be configured when entering new mode 
+        comando = subprocess.run(['ethercat', 'download', '-t', 'uint32', '0x6083', f'{id}', '--', f'{acc}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Aceleracion operativa del dispositivo {id} configurada en {acc}')
+
+    def set_Deceleration(self, id, dec):
+        #Works in any mode, but has to be configured when entering new mode 
+        comando = subprocess.run(['ethercat', 'download', '-t', 'uint32', '0x6084', f'{id}', '--', f'{dec}'], stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Desaceleracion operativa del dispositivo {id} configurada en {dec}')
+
+    #Read only instructions
+    def get_Error_Code(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'uint16', '0x603F', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Codigo de error del dispositivo {id}: {comando.stdout}')
+
+    def get_Status_Word(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'uint16', '0x6041', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Estado del dispositivo {id}: ')
+            status = int(comando.stdout.split()[1])
+            status1 = status & 111
+            status2 = status & 79
+            if status1 == 33:
+                print('- Ready to switch on')
+            elif status1 == 35:
+                print('- Switched on')
+            elif status1 == 39:
+                print('- Operation enabled')
+            elif status1 == 7:
+                print('- Quick stop active')
+            elif status2 == 0:
+                print('- Not ready to switch on')
+            elif status2 == 64:
+                print('- Switch on disabled')
+            elif status2 == 15:
+                print('- Fault reaction active')
+            elif status2 == 8:
+                print('- Fault')
+            else:
+                print('!! Unidentified')
+            
+            #The next ones describe speed, position or torque dependin on mode
+            if status & 1024 == 1024:
+                print('- Target reached')           
+            if status & 2048 == 2048:
+                print('- Internal limit active')
+            if status & 4096 == 4096:
+                print('- Set-point Acknowledge or Speed zero state')
+            if status & 8192 == 8192:
+                print('- Following or slippage Error')
+                   
+    def get_Operation_Mode(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'int8', '0x6061', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout}')
+            #print(f'--- Modo de operacion: {list(self.operationModes.keys())[list(self.operationModes.values()).index(comando.stdout)]}')
+
+    def get_Actual_Velocity(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'int32', '0x606C', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Velocidad actual del dispositivo {id} en rpm: {comando.stdout}')
+
+    def get_Actual_Position(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'int32', '0x6064', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Posicion actual del dispositivo {id} en user units: {comando.stdout}')
+
+    def get_Actual_Torque(self, id):
+        comando = subprocess.run(['ethercat', 'upload', '-t', 'int16', '0x6077', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if comando.stderr:
+            print (comando.stderr)
+        else:
+            print(f'--- Torque actual del dispositivo {id} : {comando.stdout}')
+
+    #Program functions
     def servoInitAll(self):
         print('------------------- Configurando los dispositivos --------------------')
         for id in range(len(self.slaves)):
@@ -126,108 +267,6 @@ class ServoConection:
             else:
                 print('------------- Fallo al reconfigurar la palabra de control ------------')
         print('----------------------------------------------------------------------')
-
-
-    def set_Operation_Mode(self, id, mode):
-        #Check self.operationModes for availale modes
-        comando = subprocess.run(['ethercat', 'download', '-t', 'int8', '0x6060', f'{id}', '--', f'{mode}'], stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Modo de operacion del dispositivo {id} actualizado a {mode} : {list(self.operationModes.keys())[list(self.operationModes.values()).index(mode)]}')
-
-    def set_Control_Word(self, id, word):
-        comando = subprocess.run(['ethercat', 'download', '-t', 'uint16', '0x6040', f'{id}', '--', f'{word}'], stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Palabra de control del dispositivo {id} actualizada a {word} : {list(self.controlWords.keys())[list(self.controlWords.values()).index(word)]}')
-
-    def set_Target_Velocity(self, id, spd):
-        #Slave's index and speed in rpm while in speed mode
-        comando = subprocess.run(['ethercat', 'download', '-t', 'int32', '0x60FF', f'{id}', '--', f'{spd}'], stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Velocidad objetivo del dispositivo {id} actualizada a {spd} rpm')
-
-    def set_Operative_Velocity(self, id, spd):
-        #Slave's index and speed in rpm while in position mode
-        comando = subprocess.run(['ethercat', 'download', '-t', 'uint32', '0x6081', f'{id}', '--', f'{spd}'], stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Velocidad operativa del dispositivo {id} configurada en {spd} rpm')
-
-    def set_Target_Position(self, id, pos):
-        comando = subprocess.run(['ethercat', 'download', '-t', 'int32', '0x607A', f'{id}', '--', f'{pos}'], stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Posicion objetivo del dispositivo {id} actualizada a {pos} user units')
-
-
-    def get_Status_Word(self, id):
-        comando = subprocess.run(['ethercat', 'upload', '-t', 'uint16', '0x6041', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Estado del dispositivo {id}: ')
-            status = int(comando.stdout)
-            status1 = status & 111
-            status2 = status & 79
-            if status1 == 33:
-                print('- Ready to switch on')
-            elif status1 == 35:
-                print('- Switched on')
-            elif status1 == 39:
-                print('- Operation enabled')
-            elif status1 == 7:
-                print('- Quick stop active')
-            elif status2 == 0:
-                print('- Not ready to switch on')
-            elif status2 == 64:
-                print('- Switch on disabled')
-            elif status2 == 15:
-                print('- Fault reaction active')
-            elif status2 == 8:
-                print('- Fault')
-            else:
-                print('!! Unidentified')
-            
-            #The next ones describe speed, position or torque dependin on mode
-            if status & 1024 == 1024:
-                print('- Target reached')           
-            if status & 2048 == 2048:
-                print('- Internal limit active')
-            if status & 4096 == 4096:
-                print('- Set-point Acknowledge or Speed zero state')
-            if status & 8192 == 8192:
-                print('- Following or slippage Error')
-                   
-    def get_Operation_Mode(self, id):
-        comando = subprocess.run(['ethercat', 'upload', '-t', 'int8', '0x6061', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Modo de operacion del dispositivo {id}: {comando.stdout}')
-            #print(f'--- Modo de operacion: {list(self.operationModes.keys())[list(self.operationModes.values()).index(comando.stdout)]}')
-
-    def get_Actual_Velocity(self, id):
-        comando = subprocess.run(['ethercat', 'upload', '-t', 'int32', '0x606C', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Velocidad actual del dispositivo {id} en rpm: {comando.stdout}')
-
-    def get_Actual_Position(self, id):
-        comando = subprocess.run(['ethercat', 'upload', '-t', 'int32', '0x6064', f'{id}'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        if comando.stderr:
-            print (comando.stderr)
-        else:
-            print(f'--- Posicion actual del dispositivo {id} en user units: {comando.stdout}')
-
-
 
     def servoVelocityMode(self):
         for id in range(len(self.slaves)):
@@ -343,3 +382,4 @@ if __name__ == '__main__':
     except Exception as ex:
         print(ex)
         sys.exit(1)
+        
