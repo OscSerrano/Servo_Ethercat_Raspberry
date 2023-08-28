@@ -29,9 +29,9 @@ class ServoConection:
         print('----------------------------------------------------------------------')
 
         self.operationModes = {
-            'No mode': 0,
-            'Position mode': 1,     #<-- Has 4 inner modes
-            'Velocity mode': 3,
+            'No mode': 0,           #Added
+            'Position mode': 1,     #<-- Has 4 inner modes, all added
+            'Velocity mode': 3,     #Added
             'Homing mode': 6,
             'Cyclic synchronous position mode': 8,
             'Cyclic synchronous velocity mode': 9,
