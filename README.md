@@ -46,7 +46,7 @@ sudo depmod
 
 ### Configure the ethercat master
 > [!IMPORTANT]
-> Use `ifconfig` to find and copy the interface MAC adress to use later.
+> Use `ifconfig` or `ip a` to find and copy the interface MAC adress to use later.
 ```shell
 sudo nano /etc/ethercat.conf      # For systemd based distro
 sudo nano /etc/sysconfig/ethercat # For init.d based distro
