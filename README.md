@@ -40,9 +40,9 @@ sudo depmod
 ```
 
 > [!WARNING]
-> If ```./configure``` throws 'kernel not available for 8139too driver'.
+> If ```./configure --sysconfdir=/etc``` throws 'kernel not available for 8139too driver'.
 >
-> Then try with ```./configure --enable-generic --disable-e100 --disable-8139too``` and continue from there.
+> Then try with ```./configure --sysconfdir=/etc --enable-generic --disable-8139too``` and continue from there.
 
 ### Configure the ethercat master
 > [!IMPORTANT]
