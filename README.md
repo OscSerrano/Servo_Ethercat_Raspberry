@@ -9,20 +9,23 @@ Deployed with:
 + SDO comunication with slaves (No PDO. Only SDO).
 
 ## Requirements
-### Update kernel and download kernel source
+### Update kernel
 ```shell
 sudo apt update
-sudo apt upǵrade
+sudo apt upgrade
 sudo reboot
-
-sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -O /usr/local/bin/rpi-source && sudo chmod +x /usr/local/bin/rpi-source && /usr/local/bin/rpi-source -q --tag-update
-
-rpi-source
-
 ```
+
 ### Install dependencies
 ```shell
 sudo apt install git gcc bc bison flex libssl-dev automake autoconf libtool linux-source libncurses5-dev python3 python3-pip udev
+```
+
+### Download kernel source
+```shell
+sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -O /usr/local/bin/rpi-source && sudo chmod +x /usr/local/bin/rpi-source && /usr/local/bin/rpi-source -q --tag-update
+
+rpi-source
 ```
 
 ### Install the IgH EtherCAT Master
@@ -35,6 +38,11 @@ make all modules
 sudo make modules_install install
 sudo depmod
 ```
+
+> [!WARNING]
+> If ```./configure``` throws 'kernel not available for 8139too driver'.
+>
+> Then try with ```./configure --enable-generic --disable-e100 --disable-8139too``` and continue from there.
 
 ### Configure the ethercat master
 > [!IMPORTANT]
