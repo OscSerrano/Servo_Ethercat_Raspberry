@@ -106,7 +106,7 @@ First input value is the slave's `id` (its position within the ehtercat network)
 
 > Next one is for velocity mode
 
-Apart from `id`, the only other value required is `velocity`. In my case it can be a number between -20_000 and 20_000 rpm.
+Apart from `id`, the only other value required is `velocity`. In my case it can be a number between -5_000 and 5_000 rpm.
 > [!IMPORTANT]
 > Read your own device manual to get correct values.
 
@@ -120,6 +120,6 @@ Apart from `id`, the second value required is the `position` value.
 >
 > At this moment the position input is in degrees.
 
-The third and last value is `velocity`, but in this case it can only be a number between -6_000 and 6_000 rpm.
+The third and last value is `velocity`, wich has the same limits as in velocity mode (-5_000 and 5_000 rpm).
 > [!IMPORTANT]
 > Please, read your own device manual to get correct values.
