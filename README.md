@@ -52,20 +52,12 @@ sudo nano /etc/ethercat.conf      # For systemd based distro
 sudo nano /etc/sysconfig/ethercat # For init.d based distro
 ```
 > [!NOTE]
-> You can edit both files so don't worry.
+> Edit both files.
 
 Do the next modification to the opened file:
 ```
 MASTER0_DEVICE= "your eth0 MAC address"
 DEVICE_MODULES= "generic"
-```
-
-> [!NOTE]
-> If any file exist then do next and try again.
-```shell
-sudo ln -s /opt/etherlab/etc/init.d/ethercat /etc/init.d/ethercat
-sudo mkdir /etc/sysconfig
-sudo cp /opt/etherlab/etc/sysconfig/ethercat /etc/sysconfig/ethercat
 ```
 
 ### Grant users access to ethercat
