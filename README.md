@@ -9,11 +9,6 @@ Deployed with:
 + SDO comunication with slaves (No PDO. Only SDO).
 
 ## Requirements
-### Install dependencies
-```shell
-sudo apt install git gcc bc bison flex libssl-dev automake autoconf libtool linux-source libncurses5-dev python3 python3-pip udev
-```
-
 ### Update kernel and download kernel source
 ```shell
 sudo apt update
@@ -24,6 +19,10 @@ sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-sou
 
 rpi-source
 
+```
+### Install dependencies
+```shell
+sudo apt install git gcc bc bison flex libssl-dev automake autoconf libtool linux-source libncurses5-dev python3 python3-pip udev
 ```
 
 ### Install the IgH EtherCAT Master
