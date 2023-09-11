@@ -9,7 +9,7 @@ Deployed with:
 + SDO comunication with slaves (No PDO. Only SDO).
 
 ## Requirements
-### Update kernel
+### Update system
 ```shell
 sudo apt update
 sudo apt upgrade
@@ -21,7 +21,7 @@ sudo reboot
 sudo apt install git gcc bc bison flex libssl-dev automake autoconf libtool linux-source libncurses5-dev python3 python3-pip udev
 ```
 
-### Download kernel source
+### Download and update kernel source
 ```shell
 sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -O /usr/local/bin/rpi-source && sudo chmod +x /usr/local/bin/rpi-source && /usr/local/bin/rpi-source -q --tag-update
 
