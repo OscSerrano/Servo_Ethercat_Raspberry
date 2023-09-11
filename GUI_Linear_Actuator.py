@@ -118,12 +118,12 @@ class Aplication(tk.Tk):
         )
 
     def setSpd(self, _):
-        print(f'velocidad: {self.inputSpd.get()}')
+        #print(f'velocidad: {self.inputSpd.get()}')
         self.servo.set_Operative_Velocity(0,self.inputSpd.get())
         #self.speed.set(f'Velocidad actual: {self.inputSpd.get()} rpm')
 
     def setPos(self, _):
-        print(f'Posicion: {self.inputPos.get()}')
+        #print(f'Posicion: {self.inputPos.get()}')
         self.servo.gotoPosition(0,self.inputPos.get())
         #self.speed.set(f'Posicion actual: {self.inputPos.get()} rpm')
 
@@ -133,7 +133,7 @@ class Aplication(tk.Tk):
     
     def quitApp(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
-            self.servo.closeAll
+            self.servo.closeAll()
             self.destroy()
 
 
@@ -339,12 +339,12 @@ class ServoConection:
 
             print(f'Inicializando la palabra de control del dispositivo {id}:')
             for _ in range(self.retryAttempts):
-                comando = subprocess.run(['ethercat', 'download', '-t', 'int16', '0x6040', f'{id}', '--', '6'], stderr=subprocess.PIPE, text=True)
+                comando = subprocess.run(['ethercat', 'download', '-t', 'int16', '0x6040', f'{id}', '--', '15'], stderr=subprocess.PIPE, text=True)
                 if comando.stderr:
                     print('--- Fallo!!! --- Reintentando... ---')
                     print (comando.stderr)
                 else:
-                    print('--- Palabra de control inicializada en 6 : Shutdown')
+                    print('--- Palabra de control inicializada en 15 : Enable operation')
                     break
             else:
                 print('------------- Fallo al inicializar la palabra de control -------------')
