@@ -67,59 +67,58 @@ class ServoConection:
         servo = self.master.slaves[id]
         print('Entro en config')
 
-        servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_uint16(0)))
+        servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('1')
-        servo.sdo_write(index=0x1C13, subindex=0, data=bytes(ctypes.c_uint16(0)))
+        servo.sdo_write(index=0x1C13, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('2')
 
-        servo.sdo_write(index=0x1600, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('3')
-        servo.sdo_write(index=0x1601, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1601, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('4')
-        servo.sdo_write(index=0x1602, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1602, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('5')
-        servo.sdo_write(index=0x1603, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1603, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('6')
-        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('7')
-        servo.sdo_write(index=0x1A01, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1A01, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('8')
-        servo.sdo_write(index=0x1A02, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1A02, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('9')
-        servo.sdo_write(index=0x1A03, subindex=0, data=bytes(0))
+        servo.sdo_write(index=0x1A03, subindex=0, data=bytes(ctypes.c_int8(0)))
         print('10')
 
-        servo.sdo_write(index=0x1600, subindex=1, data=bytes(1640807056))#0x60400010
-        print('almenos pasa el primero')
-        servo.sdo_write(index=0x1600, subindex=2, data=bytes(1618608160))#0x607A0020
-        servo.sdo_write(index=0x1600, subindex=3, data=bytes(1627324448))#0x60FF0020
-        servo.sdo_write(index=0x1600, subindex=4, data=bytes(1616904200))#0x60600008
-        servo.sdo_write(index=0x1600, subindex=5, data=bytes(1618018320))#0x60710010
-        servo.sdo_write(index=0x1600, subindex=6, data=bytes(1622671376))#0x60B80010
-        servo.sdo_write(index=0x1600, subindex=7, data=bytes(1625292816))#0x60E00010
-        servo.sdo_write(index=0x1600, subindex=8, data=bytes(1625358352))#0x60E10010
-        servo.sdo_write(index=0x1600, subindex=9, data=bytes(1618935840))#0x607F0020
-        servo.sdo_write(index=0x1600, subindex=0, data=bytes(9))
+        servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1640807056)))#0x60400010
+        servo.sdo_write(index=0x1600, subindex=2, data=bytes(ctypes.c_int32(1618608160)))#0x607A0020
+        servo.sdo_write(index=0x1600, subindex=3, data=bytes(ctypes.c_int32(1627324448)))#0x60FF0020
+        servo.sdo_write(index=0x1600, subindex=4, data=bytes(ctypes.c_int32(1616904200)))#0x60600008
+        servo.sdo_write(index=0x1600, subindex=5, data=bytes(ctypes.c_int32(1618018320)))#0x60710010
+        servo.sdo_write(index=0x1600, subindex=6, data=bytes(ctypes.c_int32(1622671376)))#0x60B80010
+        servo.sdo_write(index=0x1600, subindex=7, data=bytes(ctypes.c_int32(1625292816)))#0x60E00010
+        servo.sdo_write(index=0x1600, subindex=8, data=bytes(ctypes.c_int32(1625358352)))#0x60E10010
+        servo.sdo_write(index=0x1600, subindex=9, data=bytes(ctypes.c_int32(1618935840)))#0x607F0020
+        servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(9)))
         print('12')
 
-        servo.sdo_write(index=0x1A00, subindex=1, data=0x60410010)
-        servo.sdo_write(index=0x1A00, subindex=2, data=0x60640020)
-        servo.sdo_write(index=0x1A00, subindex=3, data=0x606C0020)
-        servo.sdo_write(index=0x1A00, subindex=4, data=0x60770010)
-        servo.sdo_write(index=0x1A00, subindex=5, data=0x60610008)
-        servo.sdo_write(index=0x1A00, subindex=6, data=0x60780010)
-        servo.sdo_write(index=0x1A00, subindex=7, data=0x60B90010)
-        servo.sdo_write(index=0x1A00, subindex=8, data=0x60BA0020)
-        servo.sdo_write(index=0x1A00, subindex=9, data=0x60FD0020)
-        servo.sdo_write(index=0x1A00, subindex=0, data=9)
+        servo.sdo_write(index=0x1A00, subindex=1, data=bytes(ctypes.c_int32(1614872592)))#0x60410010
+        servo.sdo_write(index=0x1A00, subindex=2, data=bytes(ctypes.c_int32(1617166368)))#0x60640020
+        servo.sdo_write(index=0x1A00, subindex=3, data=bytes(ctypes.c_int32(1617690656)))#0x606C0020
+        servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1618411536)))#0x60770010
+        servo.sdo_write(index=0x1A00, subindex=5, data=bytes(ctypes.c_int32(1616969736)))#0x60610008
+        servo.sdo_write(index=0x1A00, subindex=6, data=bytes(ctypes.c_int32(1618477072)))#0x60780010
+        servo.sdo_write(index=0x1A00, subindex=7, data=bytes(ctypes.c_int32(1622736912)))#0x60B90010
+        servo.sdo_write(index=0x1A00, subindex=8, data=bytes(ctypes.c_int32(1622802464)))#0x60BA0020
+        servo.sdo_write(index=0x1A00, subindex=9, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020
+        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(9)))
         print('13')
 
-        servo.sdo_write(index=0x1C12, subindex=1, data=0x1600)
-        servo.sdo_write(index=0x1C13, subindex=1, data=0x1A00)
+        servo.sdo_write(index=0x1C12, subindex=1, data=bytes(ctypes.c_uint16(5632)))#0x1600
+        servo.sdo_write(index=0x1C13, subindex=1, data=bytes(ctypes.c_uint16(6656)))#0x1A00
         print('14')
 
-        servo.sdo_write(index=0x1C12, subindex=0, data=1)
-        servo.sdo_write(index=0x1C13, subindex=0, data=1)
+        servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_int8(1)))
+        servo.sdo_write(index=0x1C13, subindex=0, data=bytes(ctypes.c_int8(1)))
 
         print('Termino la config')
 
