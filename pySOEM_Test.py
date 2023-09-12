@@ -171,8 +171,7 @@ class ServoConection:
                 #Free run test
                 self.master.send_processdata()
                 self.master.receive_processdata(1000)
-                rx = self.master.slaves[0].input
-                print(f'--- Algo, no se: {rx}')
+                print(f'--- Status: {self.convertInputData(self.master.slaves[0].input).status_word}')
                 time.sleep(1)
 
 
@@ -184,8 +183,8 @@ class ServoConection:
         outputData.op_mode = self.modes_of_operation['No mode']
         self.master.send_processdata()
         self.master.receive_processdata(1000)
-        rx = self.master.slaves[0].input
-        print(f'--- Fin: {rx}')
+        print(f'--- Status: {self.convertInputData(self.master.slaves[0].input).status_word}')
+    
 
         self.master.state = pysoem.INIT_STATE
         self.master.write_state()
