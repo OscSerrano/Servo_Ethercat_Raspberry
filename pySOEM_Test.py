@@ -13,7 +13,6 @@ class Device:
     product_code: int
     config_func: typing.Callable = None
 
-
 class InputPdo(ctypes.Structure):       #0x1A00 DI TxPDO-Map
     _pack_ = 1
     _fields_ = [
@@ -42,7 +41,6 @@ class OutputPdo(ctypes.Structure):      #0x1600 DO RxPDO-Map
         ('max_profile_velocity', ctypes.c_uint32),           #0x607F
     ]
 
-
 class ServoConection:
     def __init__(self):
         self.ifname = 'eth0'
@@ -68,26 +66,16 @@ class ServoConection:
         print('Entro en config')
 
         servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('1')
         servo.sdo_write(index=0x1C13, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('2')
 
         servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('3')
         servo.sdo_write(index=0x1601, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('4')
         servo.sdo_write(index=0x1602, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('5')
         servo.sdo_write(index=0x1603, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('6')
         servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('7')
         servo.sdo_write(index=0x1A01, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('8')
         servo.sdo_write(index=0x1A02, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('9')
         servo.sdo_write(index=0x1A03, subindex=0, data=bytes(ctypes.c_int8(0)))
-        print('10')
 
         servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1640807056)))#0x60400010
         servo.sdo_write(index=0x1600, subindex=2, data=bytes(ctypes.c_int32(1618608160)))#0x607A0020
@@ -99,7 +87,6 @@ class ServoConection:
         servo.sdo_write(index=0x1600, subindex=8, data=bytes(ctypes.c_int32(1625358352)))#0x60E10010
         servo.sdo_write(index=0x1600, subindex=9, data=bytes(ctypes.c_int32(1618935840)))#0x607F0020
         servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(9)))
-        print('12')
 
         servo.sdo_write(index=0x1A00, subindex=1, data=bytes(ctypes.c_int32(1614872592)))#0x60410010
         servo.sdo_write(index=0x1A00, subindex=2, data=bytes(ctypes.c_int32(1617166368)))#0x60640020
@@ -111,11 +98,9 @@ class ServoConection:
         servo.sdo_write(index=0x1A00, subindex=8, data=bytes(ctypes.c_int32(1622802464)))#0x60BA0020
         servo.sdo_write(index=0x1A00, subindex=9, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020
         servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(9)))
-        print('13')
 
         servo.sdo_write(index=0x1C12, subindex=1, data=bytes(ctypes.c_uint16(5632)))#0x1600
         servo.sdo_write(index=0x1C13, subindex=1, data=bytes(ctypes.c_uint16(6656)))#0x1A00
-        print('14')
 
         servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_int8(1)))
         servo.sdo_write(index=0x1C13, subindex=0, data=bytes(ctypes.c_int8(1)))
@@ -123,15 +108,10 @@ class ServoConection:
         print('Termino la config')
 
 
-        #servo.sdo_write(index=0x1C12, subindex=0, data=bytes(ctypes.c_int16(0)))
-
         #servo.dc_sync(True, 1_000_000)
-
-        #da200.sdo_write(0x6060, 0, bytes(ctypes.c_int8(3)))
 
     
     def run(self):
-        global da200
         self.master.open(self.ifname)
 
         if self.master.config_init() <= 0:
@@ -145,12 +125,9 @@ class ServoConection:
                 raise Exception('Unexpected slaves layout')
             device.config_func = self.expectedSlaves[i].config_func
 
-        print(f'Status code: {pysoem.al_status_code_to_string(self.master.slaves[0].al_status)}')
-
         self.master.config_map()
 
-        print(f'Status code: {pysoem.al_status_code_to_string(self.master.slaves[0].al_status)}')
-
+        #print(f'Status code: {pysoem.al_status_code_to_string(self.master.slaves[0].al_status)}')
 
         #print(f'Esto es SAFEOP {pysoem.SAFEOP_STATE}')  #4
         #print(f'Esto es OP {pysoem.OP_STATE}')          #8
@@ -165,7 +142,7 @@ class ServoConection:
             for device in self.master.slaves:
                 if not device.state == pysoem.SAFEOP_STATE:
                     print(f'{device.name} did not reach SAFEOP state')
-                    print(f'Status code: {(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
+                    print(f'Status code: {hex(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
             raise Exception('Not all devices reached SAFEOP state')
         
         self.master.state = pysoem.OP_STATE
@@ -177,17 +154,25 @@ class ServoConection:
             for device in self.master.slaves:
                 if not device.state == pysoem.OP_STATE:
                     print(f'{device.name} did not reach OP state')
-                    print(f'Status code: {hex(device.al_status)}')
+                    print(f'Status code: {hex(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
             raise Exception('Not all devices reached OP state')
         
-        for i, device in enumerate(self.master.slaves):
-            print(f'Index = {i} : Device = {device.name} : Status = {device.al_status}')
- 
-        print('-------------------------------------')
-
-
         
-        print('FIN :)')
+        try:
+            while True:
+                #Free run test
+                self.master.send_processdata()
+                self.master.receive_processdata(2000)
+                rx = self.master.slaves[0].input
+                print(f'--- Algo, no se: {rx}')
+
+
+        except KeyboardInterrupt:
+            # ctrl + c
+            print('Stopped')
+
+        self.master.state = pysoem.INIT_STATE
+        self.master.write_state()
         self.master.close()
 
 
