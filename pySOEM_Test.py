@@ -77,7 +77,7 @@ class ServoConection:
         servo.sdo_write(index=0x1A02, subindex=0, data=bytes(ctypes.c_int8(0)))
         servo.sdo_write(index=0x1A03, subindex=0, data=bytes(ctypes.c_int8(0)))
 
-        servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1640807056)))#0x60400010
+        servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1614807056)))#0x60400010
         servo.sdo_write(index=0x1600, subindex=2, data=bytes(ctypes.c_int32(1618608160)))#0x607A0020
         servo.sdo_write(index=0x1600, subindex=3, data=bytes(ctypes.c_int32(1627324448)))#0x60FF0020
         servo.sdo_write(index=0x1600, subindex=4, data=bytes(ctypes.c_int32(1616904200)))#0x60600008
