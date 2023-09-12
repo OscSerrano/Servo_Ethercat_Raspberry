@@ -162,6 +162,7 @@ class ServoConection:
             print(f'id: {i}, name: {device.name}, state: maybe OP, status: {pysoem.al_status_code_to_string(device.al_status)}')
         print('----------------------------------------------------------------------')
 
+        inputData = InputPdo()
         outputData = OutputPdo()
         outputData.control_word = 15
         outputData.op_mode = self.modes_of_operation['Profile position mode']
@@ -171,7 +172,9 @@ class ServoConection:
                 #Free run test
                 self.master.send_processdata()
                 self.master.receive_processdata(1000)
-                print(f'--- Status: {self.convertInputData(self.master.slaves[0].input).status_word}')
+                inputData = self.convertInputData(self.master.slaves[0].input)
+                print(f'--- Status: {inputData.status_word}')
+                print(f'--- OP Mode: {inputData.op_mode_display}')
                 time.sleep(1)
 
 
