@@ -157,7 +157,10 @@ class ServoConection:
                     print(f'Status code: {hex(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
             raise Exception('Not all devices reached OP state')
         
-        
+        for i, device in enumerate(self.master.slaves):
+            print(f'id: {i}, name: {device.name}, state: maybe OP, status: {pysoem.al_status_code_to_string(device.al_status)}')
+        print('----------------------------------------------------------------------')
+
         try:
             while True:
                 #Free run test
