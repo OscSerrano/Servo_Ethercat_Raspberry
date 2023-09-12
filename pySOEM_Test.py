@@ -4,6 +4,7 @@ import ctypes
 import pysoem
 import dataclasses
 import typing
+import time
 
 
 @dataclasses.dataclass
@@ -19,11 +20,11 @@ class InputPdo(ctypes.Structure):       #0x1A00 DI TxPDO-Map
         ('status_word', ctypes.c_uint16),                   #0x6041
         ('position_actual_value', ctypes.c_int32),          #0x6064
         ('velocity_actual_value', ctypes.c_int16),          #0x606C
-        ('torque_actual_value', ctypes.c_int16),            #0x6077
+#        ('torque_actual_value', ctypes.c_int16),            #0x6077
         ('op_mode_display', ctypes.c_int16),                #0x6061
-        ('current_actual_value', ctypes.c_int16),           #0x6078
-        ('touch_probe_status', ctypes.c_uint16),            #0x60B9
-        ('touch_probe_1_positive_value', ctypes.c_int16),   #0x60BA
+#        ('current_actual_value', ctypes.c_int16),           #0x6078
+#        ('touch_probe_status', ctypes.c_uint16),            #0x60B9
+#        ('touch_probe_1_positive_value', ctypes.c_int16),   #0x60BA
         ('digital_inputs', ctypes.c_uint16),                #0x60FD
     ]
 
@@ -34,11 +35,11 @@ class OutputPdo(ctypes.Structure):      #0x1600 DO RxPDO-Map
         ('target_position', ctypes.c_int32),                 #0x607A
         ('target_velocity', ctypes.c_int32),                 #0x60FF
         ('op_mode', ctypes.c_int8),                          #0x6060
-        ('target_torque', ctypes.c_int16),                   #0x6071
-        ('touch_probe_control', ctypes.c_uint16),            #0x60B8
-        ('positive_torque_limit', ctypes.c_uint16),          #0x60E0
-        ('negative_torque_limit', ctypes.c_uint16),          #0x60E1
-        ('max_profile_velocity', ctypes.c_uint32),           #0x607F
+#        ('target_torque', ctypes.c_int16),                   #0x6071
+#        ('touch_probe_control', ctypes.c_uint16),            #0x60B8
+#        ('positive_torque_limit', ctypes.c_uint16),          #0x60E0
+#        ('negative_torque_limit', ctypes.c_uint16),          #0x60E1
+#        ('max_profile_velocity', ctypes.c_uint32),           #0x607F
     ]
 
 class ServoConection:
@@ -93,11 +94,11 @@ class ServoConection:
         servo.sdo_write(index=0x1A00, subindex=3, data=bytes(ctypes.c_int32(1617690656)))#0x606C0020 - actual velocity
 #        servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1618411536)))#0x60770010 - actual torque
         servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1616969736)))#0x60610008 - display op mode
-#        servo.sdo_write(index=0x1A00, subindex=6, data=bytes(ctypes.c_int32(1618477072)))#0x60780010 - i don't know
+#        servo.sdo_write(index=0x1A00, subindex=6, data=bytes(ctypes.c_int32(1618477072)))#0x60780010 - current value
 #        servo.sdo_write(index=0x1A00, subindex=7, data=bytes(ctypes.c_int32(1622736912)))#0x60B90010 - t probe status val
 #        servo.sdo_write(index=0x1A00, subindex=8, data=bytes(ctypes.c_int32(1622802464)))#0x60BA0020 - t probe 1+ value
-#        servo.sdo_write(index=0x1A00, subindex=9, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020 - digital inputs
-        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(4)))
+        servo.sdo_write(index=0x1A00, subindex=5, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020 - digital inputs
+        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(5)))
 
         servo.sdo_write(index=0x1C12, subindex=1, data=bytes(ctypes.c_uint16(5632)))#0x1600
         servo.sdo_write(index=0x1C13, subindex=1, data=bytes(ctypes.c_uint16(6656)))#0x1A00
@@ -156,23 +157,35 @@ class ServoConection:
                     print(f'{device.name} did not reach OP state')
                     print(f'Status code: {hex(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
             raise Exception('Not all devices reached OP state')
-        
+
         for i, device in enumerate(self.master.slaves):
             print(f'id: {i}, name: {device.name}, state: maybe OP, status: {pysoem.al_status_code_to_string(device.al_status)}')
         print('----------------------------------------------------------------------')
+
+        outputData = OutputPdo()
+        outputData.control_word = 15
+        outputData.op_mode = self.modes_of_operation['Profile position mode']
 
         try:
             while True:
                 #Free run test
                 self.master.send_processdata()
-                self.master.receive_processdata(2000)
+                self.master.receive_processdata(1000)
                 rx = self.master.slaves[0].input
                 print(f'--- Algo, no se: {rx}')
+                time.sleep(1)
 
 
         except KeyboardInterrupt:
             # ctrl + c
             print('Stopped')
+
+        outputData.control_word = 0
+        outputData.op_mode = self.modes_of_operation['No mode']
+        self.master.send_processdata()
+        self.master.receive_processdata(1000)
+        rx = self.master.slaves[0].input
+        print(f'--- Fin: {rx}')
 
         self.master.state = pysoem.INIT_STATE
         self.master.write_state()
