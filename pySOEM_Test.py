@@ -77,27 +77,27 @@ class ServoConection:
         servo.sdo_write(index=0x1A02, subindex=0, data=bytes(ctypes.c_int8(0)))
         servo.sdo_write(index=0x1A03, subindex=0, data=bytes(ctypes.c_int8(0)))
 
-        servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1614807056)))#0x60400010
-        servo.sdo_write(index=0x1600, subindex=2, data=bytes(ctypes.c_int32(1618608160)))#0x607A0020
-        servo.sdo_write(index=0x1600, subindex=3, data=bytes(ctypes.c_int32(1627324448)))#0x60FF0020
-        servo.sdo_write(index=0x1600, subindex=4, data=bytes(ctypes.c_int32(1616904200)))#0x60600008
-        servo.sdo_write(index=0x1600, subindex=5, data=bytes(ctypes.c_int32(1618018320)))#0x60710010
-        servo.sdo_write(index=0x1600, subindex=6, data=bytes(ctypes.c_int32(1622671376)))#0x60B80010
-        servo.sdo_write(index=0x1600, subindex=7, data=bytes(ctypes.c_int32(1625292816)))#0x60E00010
-        servo.sdo_write(index=0x1600, subindex=8, data=bytes(ctypes.c_int32(1625358352)))#0x60E10010
-        servo.sdo_write(index=0x1600, subindex=9, data=bytes(ctypes.c_int32(1618935840)))#0x607F0020
-        servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(9)))
+        servo.sdo_write(index=0x1600, subindex=1, data=bytes(ctypes.c_int32(1614807056)))#0x60400010 - control word
+        servo.sdo_write(index=0x1600, subindex=2, data=bytes(ctypes.c_int32(1618608160)))#0x607A0020 - target position
+        servo.sdo_write(index=0x1600, subindex=3, data=bytes(ctypes.c_int32(1627324448)))#0x60FF0020 - target velocity
+        servo.sdo_write(index=0x1600, subindex=4, data=bytes(ctypes.c_int32(1616904200)))#0x60600008 - op mode
+#        servo.sdo_write(index=0x1600, subindex=5, data=bytes(ctypes.c_int32(1618018320)))#0x60710010 - target torque
+#        servo.sdo_write(index=0x1600, subindex=6, data=bytes(ctypes.c_int32(1622671376)))#0x60B80010 - t probe ctrl value
+#        servo.sdo_write(index=0x1600, subindex=7, data=bytes(ctypes.c_int32(1625292816)))#0x60E00010 - +torque limit
+#        servo.sdo_write(index=0x1600, subindex=8, data=bytes(ctypes.c_int32(1625358352)))#0x60E10010 - -torque limit
+#        servo.sdo_write(index=0x1600, subindex=9, data=bytes(ctypes.c_int32(1618935840)))#0x607F0020 - max profile velocity
+        servo.sdo_write(index=0x1600, subindex=0, data=bytes(ctypes.c_int8(4)))
 
-        servo.sdo_write(index=0x1A00, subindex=1, data=bytes(ctypes.c_int32(1614872592)))#0x60410010
-        servo.sdo_write(index=0x1A00, subindex=2, data=bytes(ctypes.c_int32(1617166368)))#0x60640020
-        servo.sdo_write(index=0x1A00, subindex=3, data=bytes(ctypes.c_int32(1617690656)))#0x606C0020
-        servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1618411536)))#0x60770010
-        servo.sdo_write(index=0x1A00, subindex=5, data=bytes(ctypes.c_int32(1616969736)))#0x60610008
-        servo.sdo_write(index=0x1A00, subindex=6, data=bytes(ctypes.c_int32(1618477072)))#0x60780010
-        servo.sdo_write(index=0x1A00, subindex=7, data=bytes(ctypes.c_int32(1622736912)))#0x60B90010
-        servo.sdo_write(index=0x1A00, subindex=8, data=bytes(ctypes.c_int32(1622802464)))#0x60BA0020
-        servo.sdo_write(index=0x1A00, subindex=9, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020
-        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(9)))
+        servo.sdo_write(index=0x1A00, subindex=1, data=bytes(ctypes.c_int32(1614872592)))#0x60410010 - status word
+        servo.sdo_write(index=0x1A00, subindex=2, data=bytes(ctypes.c_int32(1617166368)))#0x60640020 - actual position
+        servo.sdo_write(index=0x1A00, subindex=3, data=bytes(ctypes.c_int32(1617690656)))#0x606C0020 - actual velocity
+#        servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1618411536)))#0x60770010 - actual torque
+        servo.sdo_write(index=0x1A00, subindex=4, data=bytes(ctypes.c_int32(1616969736)))#0x60610008 - display op mode
+#        servo.sdo_write(index=0x1A00, subindex=6, data=bytes(ctypes.c_int32(1618477072)))#0x60780010 - i don't know
+#        servo.sdo_write(index=0x1A00, subindex=7, data=bytes(ctypes.c_int32(1622736912)))#0x60B90010 - t probe status val
+#        servo.sdo_write(index=0x1A00, subindex=8, data=bytes(ctypes.c_int32(1622802464)))#0x60BA0020 - t probe 1+ value
+#        servo.sdo_write(index=0x1A00, subindex=9, data=bytes(ctypes.c_int32(1627193376)))#0x60FD0020 - digital inputs
+        servo.sdo_write(index=0x1A00, subindex=0, data=bytes(ctypes.c_int8(4)))
 
         servo.sdo_write(index=0x1C12, subindex=1, data=bytes(ctypes.c_uint16(5632)))#0x1600
         servo.sdo_write(index=0x1C13, subindex=1, data=bytes(ctypes.c_uint16(6656)))#0x1A00
