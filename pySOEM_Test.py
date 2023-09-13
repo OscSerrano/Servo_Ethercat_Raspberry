@@ -21,7 +21,7 @@ class InputPdo(ctypes.Structure):       #0x1A00 DI TxPDO-Map
         ('position_actual_value', ctypes.c_int32),          #0x6064
         ('velocity_actual_value', ctypes.c_int16),          #0x606C
 #        ('torque_actual_value', ctypes.c_int16),            #0x6077
-        ('op_mode_display', ctypes.c_int16),                #0x6061
+        ('op_mode_display', ctypes.c_int8),                #0x6061
 #        ('current_actual_value', ctypes.c_int16),           #0x6078
 #        ('touch_probe_status', ctypes.c_uint16),            #0x60B9
 #        ('touch_probe_1_positive_value', ctypes.c_int16),   #0x60BA
@@ -170,7 +170,6 @@ class ServoConection:
 
         try:
             while True:
-                #Free run test
                 self.master.send_processdata()
                 self.master.receive_processdata(1000)
                 inputData = self.convertInputData(self.master.slaves[0].input)
@@ -185,6 +184,7 @@ class ServoConection:
 
         outputData.control_word = 0
         outputData.op_mode = self.modes_of_operation['No mode']
+        self.master.slaves[0].output = bytes(outputData)
         self.master.send_processdata()
         self.master.receive_processdata(1000)
         inputData = self.convertInputData(self.master.slaves[0].input)
