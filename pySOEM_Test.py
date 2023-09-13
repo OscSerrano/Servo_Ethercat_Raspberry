@@ -175,7 +175,7 @@ class ServoConection:
                 inputData = self.convertInputData(self.master.slaves[0].input)
                 print(f'--- Status: {inputData.status_word}')
                 print(f'--- OP Mode: {inputData.op_mode_display}')
-                time.sleep(1)
+                time.sleep(0.1)
 
 
         except KeyboardInterrupt:
