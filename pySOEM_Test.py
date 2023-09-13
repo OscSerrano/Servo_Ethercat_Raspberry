@@ -166,6 +166,7 @@ class ServoConection:
         outputData = OutputPdo()
         outputData.control_word = 15
         outputData.op_mode = self.modes_of_operation['Profile position mode']
+        self.master.slaves[0].output = bytes(outputData)
 
         try:
             while True:
@@ -186,7 +187,9 @@ class ServoConection:
         outputData.op_mode = self.modes_of_operation['No mode']
         self.master.send_processdata()
         self.master.receive_processdata(1000)
-        print(f'--- Status: {self.convertInputData(self.master.slaves[0].input).status_word}')
+        inputData = self.convertInputData(self.master.slaves[0].input)
+        print(f'--- Status: {inputData.status_word}')
+        print(f'--- OP Mode: {inputData.op_mode_display}')
     
 
         self.master.state = pysoem.INIT_STATE
