@@ -5,6 +5,7 @@ import pysoem
 import dataclasses
 import typing
 import time
+import threading
 
 
 @dataclasses.dataclass
@@ -45,7 +46,10 @@ class OutputPdo(ctypes.Structure):      #0x1600 DO RxPDO-Map
 class ServoConection:
     def __init__(self):
         self.ifname = 'eth0'
+        self.stopPDO_Thread = threading.Event()
+        self.actualWKC = 0
         self.master = pysoem.Master()
+        
         self.expectedSlaves = {
             0: Device('INVT_DA200_262', 0x0000_0616, 0x0000_0000, self.servoConfig)
         }
@@ -111,7 +115,14 @@ class ServoConection:
 
         #servo.dc_sync(True, 1_000_000)
 
-    
+    def processData_Thread(self):
+        while not self.stopPDO_Thread.is_set():
+            self.master.send_processdata()
+            self.actualWKC = self.master.receive_processdata(10000)
+            if not self.actualWKC == self.master.expected_wkc:
+                print('Incorrect wkc')
+            time.sleep(0.001)
+
     def run(self):
         self.master.open(self.ifname)
 
@@ -147,6 +158,12 @@ class ServoConection:
             raise Exception('Not all devices reached SAFEOP state')
         
         self.master.state = pysoem.OP_STATE
+
+
+        procThread = threading.Thread(target=self.processData_Thread)
+        procThread.start()
+
+
         self.master.write_state()
         self.master.state_check(pysoem.OP_STATE, 50_000)
 
@@ -156,6 +173,11 @@ class ServoConection:
                 if not device.state == pysoem.OP_STATE:
                     print(f'{device.name} did not reach OP state')
                     print(f'Status code: {hex(device.al_status)} ({pysoem.al_status_code_to_string(device.al_status)})')
+            self.stopPDO_Thread.set()
+            procThread.join()
+            self.master.state = pysoem.INIT_STATE
+            self.master.write_state()
+            self.master.close()
             raise Exception('Not all devices reached OP state')
 
         for i, device in enumerate(self.master.slaves):
@@ -170,13 +192,27 @@ class ServoConection:
 
         try:
             while True:
-                self.master.send_processdata()
-                self.master.receive_processdata(1000)
+                print('Ingresa la nueva posicion en grados y velocidad Ej: 90 20')
+                print('Ingresa ? ? para ver el estatus del dispositivo Ejemplo: ? ?')
+                print('Ingresa ctrl C para finalizar')
+                if pos == '?' and spd == '?':
+                    inputData = self.convertInputData(self.master.slaves[0].input)
+                    print(f'--- Position: {inputData.position_actual_value}')
+                    print(f'--- Velocity: {inputData.velocity_actual_value}')
+                else:
+                    try:
+                        pos, spd = input().split()
+                        encoderPosition = int(int(pos) * 10000 / 360)
+
+                    except:
+                        print('---')
+                        print('¡¡¡ Ingresa los valores requeridos !!!')
+                        print('---')
+
+
                 inputData = self.convertInputData(self.master.slaves[0].input)
                 print(f'--- Status: {inputData.status_word}')
                 print(f'--- OP Mode: {inputData.op_mode_display}')
-                time.sleep(0.001)
-
 
         except KeyboardInterrupt:
             # ctrl + c
