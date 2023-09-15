@@ -186,7 +186,7 @@ class ServoConection:
 
         inputData = InputPdo()
         outputData = OutputPdo()
-        outputData.control_word = 15
+        outputData.control_word = 47
         outputData.op_mode = self.modes_of_operation['Profile position mode']
         self.master.slaves[0].output = bytes(outputData)
 
@@ -197,22 +197,24 @@ class ServoConection:
                 print('Ingresa ctrl C para finalizar')
                 if pos == '?' and spd == '?':
                     inputData = self.convertInputData(self.master.slaves[0].input)
+                    print(f'--- Status: {inputData.status_word}')
                     print(f'--- Position: {inputData.position_actual_value}')
                     print(f'--- Velocity: {inputData.velocity_actual_value}')
+                    print(f'--- Dig inpts: {inputData.digital_inputs}')
                 else:
                     try:
-                        pos, spd = input().split()
-                        encoderPosition = int(int(pos) * 10000 / 360)
-
+                        pos, spd = int(input().split())
+                        encoderPosition = int(pos * 10000 / 360)
                     except:
                         print('---')
                         print('¡¡¡ Ingresa los valores requeridos !!!')
                         print('---')
 
-
-                inputData = self.convertInputData(self.master.slaves[0].input)
-                print(f'--- Status: {inputData.status_word}')
-                print(f'--- OP Mode: {inputData.op_mode_display}')
+                    outputData.target_velocity = spd
+                    outputData.target_position = encoderPosition
+                    outputData.control_word = 67
+                    time.sleep(0.001)
+                    outputData.control_word = 47
 
         except KeyboardInterrupt:
             # ctrl + c
